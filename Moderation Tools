@@ -1,0 +1,40 @@
+import nextcord
+from nextcord import Interaction, SlashOption
+from nextcord.ext import commands
+
+intents = nextcord.Intents.default()
+intents = nextcord.Intents().all()
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"{bot.user.name} is ready!")
+
+logging = True
+logschannel = 1125599209651966143
+
+@bot.slash_command()
+async def kick(interaction: nextcord.Interaction, user: nextcord.Member, reason: str):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("Missing Permissions to Run Command, Administrator", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"Kicked {user.mention}", ephemeral=True)
+        if logging is True:
+            log_channel = bot.get_channel(logschannel)
+            await log_channel.send(f"{user.mention} was Kicked by {interaction.user.mention} for {reason}")
+        await user.kick(reason=reason)
+
+@bot.slash_command()
+async def ban(interaction: nextcord.Interaction, user: nextcord.Member, reason: str):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("Missing Permissions to Run Command, Administrator", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"Banned {user.mention}", ephemeral=True)
+        if logging is True:
+            log_channel = bot.get_channel(logschannel)
+            await log_channel.send(f"{user.mention} was Banned by {interaction.user.mention} for {reason}")
+        await user.ban(reason=reason)
+
+
+
+bot.run("YOUR BOTS TOKEN")
